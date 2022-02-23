@@ -1,0 +1,26 @@
+title Patient vaccination
+
+participant Patient
+participant App
+participant Server
+
+
+Patient->App:View history
+App->Server:getVaccinationHistory(user, filters)
+App<--Server:Vaccination history
+Patient<--App:Show history
+Patient->App:Register for a new vaccination
+App->Server:getVaccinationSlots(filters)
+App<--Server:Slots fulfilling criteria
+Patient<--App:Show slots
+Patient->>App:Choose slot
+App->>Server:registerVaccination(chosenOffer)
+opt Cancel planned vaccination
+Patient->App:Cancel vaccination
+App->Server:deleteVaccination(vaccination)
+App<--Server:Confirmation
+Patient<--App:Show confirmation
+end
+rbox over Patient:Vaccinated
+
+--- * ---

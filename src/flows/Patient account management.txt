@@ -1,0 +1,31 @@
+title Patient account management
+
+participant Patient
+participant App
+participant Server
+
+
+Patient->App:Choose to register
+Patient<--App:Show registration form
+Patient->>App:Input data and send
+App->>Server:registerPatient(data)
+Patient<-Server:Send confirmation email
+Patient-->App:confirmRegistration(user)
+App->Server:confirmRegistration(user)
+Server->App:Send "confirmation received"
+App->Patient:Send "confirmation received"
+Patient->App:Choose to login
+Patient<--App:Show login form
+Patient->>App:Input data
+App->Server:loginPatient(data)
+App<--Server:Response
+
+opt Credentials invalid
+Patient<<-App:Ask to log in again
+end
+rbox over Patient:Logged in
+Patient<<-App:Show dashboard
+Patient->>App:Choose to delete account
+App->>Server:archiveAccount(user)
+
+--- * ---

@@ -1,0 +1,44 @@
+title Admin workflow
+
+participant Admin
+participant App
+participant Server
+Admin->App:Login
+App->Server:loginAdmin(data)
+App<--Server:Response
+Admin<--App:Show dashboard
+
+opt Create bug report
+Admin->>App:Create bug report
+App->>Server:addBugReport(bugInfo)
+end
+
+opt Add doctor
+Admin->App:Add doctor
+Admin<--App:Show new doctor form
+Admin->>App:Input data and send
+App->>Server:createDoctor(doctorData)
+end 
+
+opt View vaccination history
+Admin->App:View vaccination history
+App->Server:getVaccinations(filters)
+App<--Server:Report according to criteria
+Admin<--App:Show report
+end 
+
+opt View patients
+Admin->App:View patients
+App->Server:getPatients()
+App<--Server:Patients
+Admin<--App:Show patients
+end
+
+opt Edit patient
+Admin->App:Edit patient
+Admin<--App:Show edit form
+Admin->>App:Submit new patient data
+App->>Server:editPatient(patientId, newPatientData)
+end
+ 
+

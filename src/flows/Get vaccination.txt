@@ -1,0 +1,13 @@
+title Get vaccination cert
+
+participant Patient
+participant App
+participant Server
+
+rbox over Patient:Vaccinated
+Patient->App:Request certificate
+App->Server:getCertificate(user)
+App<--Server:Certificate
+Patient<--App:Show certificate
+
+--- * ---

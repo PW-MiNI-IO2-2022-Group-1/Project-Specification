@@ -1,0 +1,1096 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "patient",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000/patient"
+        }
+    ],
+    "paths": {
+        "/registration": {
+            "post": {
+                "summary": "",
+                "operationId": "Register patient",
+                "responses": {
+                    "201": {
+                        "description": "Patient registered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Patient"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Specified email or pesel already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtherErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                },
+                "description": "Register new patient",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "firstName": {
+                                        "type": "string"
+                                    },
+                                    "lastName": {
+                                        "type": "string"
+                                    },
+                                    "pesel": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "required": [
+                                            "city",
+                                            "zipCode",
+                                            "street",
+                                            "houseNumber"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "city": {
+                                                "type": "string"
+                                            },
+                                            "zipCode": {
+                                                "type": "string"
+                                            },
+                                            "street": {
+                                                "type": "string"
+                                            },
+                                            "houseNumber": {
+                                                "type": "string"
+                                            },
+                                            "localNumber": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "firstName",
+                                    "lastName",
+                                    "pesel",
+                                    "email",
+                                    "password",
+                                    "address"
+                                ]
+                            },
+                            "examples": {
+                                "example-1": {
+                                    "value": {
+                                        "firstName": "John",
+                                        "lastName": "Doe",
+                                        "pesel": "003005039978",
+                                        "email": "john.doe@patient.com",
+                                        "password": "!Password#123",
+                                        "address": {
+                                            "city": "Warszawa",
+                                            "zipCode": "01-202",
+                                            "street": "Jaktorowska",
+                                            "houseNumber": "14",
+                                            "localNumber": "5a"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "application/xml": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        }
+                    },
+                    "description": ""
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "",
+                "operationId": "Login as a patient",
+                "responses": {
+                    "200": {
+                        "description": "User logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "description": "Bearer token"
+                                        },
+                                        "patient": {
+                                            "$ref": "#/components/schemas/Patient"
+                                        }
+                                    },
+                                    "required": [
+                                        "token",
+                                        "patient"
+                                    ]
+                                },
+                                "examples": {
+                                    "example-1": {
+                                        "value": {
+                                            "token": "abdefa1631jhdsaskj13h13=",
+                                            "patient": {
+                                                "id": 1,
+                                                "firstName": "Patient",
+                                                "lastName": "Patient",
+                                                "pesel": "003005039981",
+                                                "email": "john.doe@patient.com",
+                                                "address": {
+                                                    "id": 1,
+                                                    "city": "Biłgoraj",
+                                                    "zipCode": "23-400",
+                                                    "street": "Jana Pawła II",
+                                                    "houseNumber": "20",
+                                                    "localNumber": "1A"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtherErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "Login as a patient",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            },
+                            "examples": {
+                                "example-1": {
+                                    "value": {
+                                        "email": "john@doe.com",
+                                        "password": "!Password#123"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/account": {
+            "put": {
+                "summary": "",
+                "operationId": "Edit account",
+                "responses": {
+                    "200": {
+                        "description": "New edited data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Patient"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                },
+                "description": "Edit account details",
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "firstName": {
+                                        "type": "string"
+                                    },
+                                    "lastName": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "object",
+                                        "required": [
+                                            "city",
+                                            "zipCode",
+                                            "street",
+                                            "houseNumber"
+                                        ],
+                                        "properties": {
+                                            "city": {
+                                                "type": "string"
+                                            },
+                                            "zipCode": {
+                                                "type": "string"
+                                            },
+                                            "street": {
+                                                "type": "string"
+                                            },
+                                            "houseNumber": {
+                                                "type": "string"
+                                            },
+                                            "localNumber": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "firstName",
+                                    "lastName",
+                                    "password",
+                                    "address"
+                                ]
+                            },
+                            "examples": {
+                                "example-1": {
+                                    "value": {
+                                        "firstName": "John",
+                                        "lastName": "Doe",
+                                        "password": "Super-Strong-Password#123",
+                                        "address": {
+                                            "city": "Warszawa",
+                                            "zipCode": "01-202",
+                                            "street": "Jaktorowska",
+                                            "houseNumber": "14",
+                                            "localNumber": "5a"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "application/xml": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        }
+                    },
+                    "description": ""
+                }
+            },
+            "delete": {
+                "summary": "",
+                "operationId": "Delete account",
+                "responses": {
+                    "200": {
+                        "description": "Account deleted"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "Delete account"
+            }
+        },
+        "/vaccination-slots": {
+            "get": {
+                "summary": "",
+                "tags": [],
+                "responses": {
+                    "200": {
+                        "description": "Return array of available vaccination slots",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/VaccinationSlot"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                },
+                "operationId": "Get available vaccination slots",
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "Get available vaccination slots",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "COVID-19",
+                                "COVID-21",
+                                "Flu",
+                                "OTHER"
+                            ]
+                        },
+                        "in": "query",
+                        "name": "disease",
+                        "description": "Selected disease to filter vaccination slots",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/vaccination-slots/{vaccinationSlotId}": {
+            "parameters": [
+                {
+                    "schema": {
+                        "type": "string"
+                    },
+                    "name": "vaccinationSlotId",
+                    "in": "path",
+                    "required": true
+                }
+            ],
+            "put": {
+                "summary": "",
+                "operationId": "Reserve vaccination slot",
+                "responses": {
+                    "200": {
+                        "description": "Vaccination slot reserves",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "default": true
+                                        }
+                                    },
+                                    "required": [
+                                        "success"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtherErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Vaccination slot already taken",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtherErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "description": "Reserve current vaccination slot",
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
+            },
+            "delete": {
+                "summary": "",
+                "operationId": "Cancel reserved vaccination slot",
+                "responses": {
+                    "200": {
+                        "description": "Vaccination slot canceled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "default": true
+                                        }
+                                    },
+                                    "required": [
+                                        "success"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtherErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Vaccination already canceled or it doesn't belong to current patient",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtherErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "Cancel reserved vaccination slot"
+            }
+        },
+        "/vaccinations": {
+            "get": {
+                "summary": "",
+                "tags": [],
+                "responses": {
+                    "200": {
+                        "description": "Array of vaccinations (sorted by id vaccinationSlot date DESC)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "currentPage": {
+                                                    "type": "integer"
+                                                },
+                                                "totalPages": {
+                                                    "type": "integer"
+                                                },
+                                                "currentRecords": {
+                                                    "type": "integer"
+                                                },
+                                                "totalRecords": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Vaccination"
+                                            }
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "example-1": {
+                                        "value": {
+                                            "pagination": {
+                                                "currentPage": 0,
+                                                "totalPages": 0,
+                                                "currentRecords": 0,
+                                                "totalRecords": 0
+                                            },
+                                            "data": [
+                                                {
+                                                    "id": 1,
+                                                    "vaccine": {
+                                                        "id": 1,
+                                                        "name": "Phizer",
+                                                        "disease": "COVID-19",
+                                                        "requiredDoses": 2,
+                                                        "serialNumber": "000-1311231"
+                                                    },
+                                                    "vaccinationSlot": {
+                                                        "id": 1,
+                                                        "date": "2019-08-24T14:15:22Z"
+                                                    },
+                                                    "status": "Planned",
+                                                    "patient": {
+                                                        "id": 1,
+                                                        "firstName": "Patient",
+                                                        "lastName": "Patient",
+                                                        "pesel": "003005039981",
+                                                        "email": "john.doe@patient.com",
+                                                        "address": {
+                                                            "id": 1,
+                                                            "city": "Biłgoraj",
+                                                            "zipCode": "23-400",
+                                                            "street": "Jana Pawła II",
+                                                            "houseNumber": "20",
+                                                            "localNumber": "1A"
+                                                        }
+                                                    },
+                                                    "doctor": {
+                                                        "id": 1,
+                                                        "firstName": "Dr John",
+                                                        "lastName": "Doe",
+                                                        "email": "john.doe@doctor.com"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                },
+                "operationId": "Get history of vaccinations",
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "Return history of vaccinations and future vaccinations",
+                "parameters": [
+                    {
+                        "schema": {
+                            "type": "number",
+                            "default": 1
+                        },
+                        "in": "query",
+                        "name": "page",
+                        "description": "Page number",
+                        "allowEmptyValue": true
+                    }
+                ]
+            }
+        },
+        "/vaccinations/{vaccinationId}/certificate": {
+            "parameters": [
+                {
+                    "schema": {
+                        "type": "string"
+                    },
+                    "name": "vaccinationId",
+                    "in": "path",
+                    "required": true
+                }
+            ],
+            "get": {
+                "summary": "",
+                "tags": [],
+                "responses": {
+                    "200": {
+                        "description": "Return certificate",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {}
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtherErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Vaccination has not been taken yet by the patient",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OtherErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "operationId": "Download vaccination certificate",
+                "description": "Download vaccination certificate",
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
+            }
+        },
+        "/registration/confirm": {
+            "post": {
+                "summary": "",
+                "operationId": "Confirm registration",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "example-1": {
+                                    "value": {
+                                        "token": "verification-token-1234-dsadsad="
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Address": {
+                "title": "Address",
+                "type": "object",
+                "examples": [
+                    {
+                        "id": 0,
+                        "city": "Biłgoraj",
+                        "zipCode": "23-400",
+                        "street": "Jana Pawła II",
+                        "houseNumber": "20",
+                        "localNumber": "1A"
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "city": {
+                        "type": "string"
+                    },
+                    "zipCode": {
+                        "type": "string"
+                    },
+                    "street": {
+                        "type": "string"
+                    },
+                    "houseNumber": {
+                        "type": "string"
+                    },
+                    "localNumber": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "city",
+                    "zipCode",
+                    "street",
+                    "houseNumber"
+                ]
+            },
+            "Doctor": {
+                "title": "Doctor",
+                "type": "object",
+                "examples": [
+                    {
+                        "id": 1,
+                        "firstName": "Dr John",
+                        "lastName": "Doe",
+                        "email": "john.doe@doctor.com"
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "firstName",
+                    "lastName",
+                    "email"
+                ]
+            },
+            "OtherErrorResponse": {
+                "title": "OtherErrorResponse",
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Is set to false\n"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "description": "Error message"
+                    }
+                },
+                "required": [
+                    "success",
+                    "msg"
+                ],
+                "examples": [
+                    {
+                        "success": false,
+                        "msg": "String containing error message"
+                    }
+                ]
+            },
+            "Patient": {
+                "title": "Patient",
+                "type": "object",
+                "examples": [
+                    {
+                        "id": 1,
+                        "firstName": "Patient",
+                        "lastName": "Patient",
+                        "pesel": "003005039981",
+                        "email": "john.doe@patient.com",
+                        "address": {
+                            "id": 1,
+                            "city": "Biłgoraj",
+                            "zipCode": "23-400",
+                            "street": "Jana Pawła II",
+                            "houseNumber": "20",
+                            "localNumber": "1A"
+                        }
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "pesel": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "$ref": "#/components/schemas/Address"
+                    }
+                },
+                "required": [
+                    "id",
+                    "firstName",
+                    "lastName",
+                    "pesel",
+                    "email",
+                    "address"
+                ]
+            },
+            "Vaccination": {
+                "title": "Vaccination",
+                "type": "object",
+                "examples": [
+                    {
+                        "id": 1,
+                        "vaccine": {
+                            "id": 1,
+                            "name": "Phizer",
+                            "disease": "COVID-19",
+                            "requiredDoses": 2,
+                            "serialNumber": "000-1311231"
+                        },
+                        "vaccinationSlot": {
+                            "id": 1,
+                            "date": "2019-08-24T14:15:22Z"
+                        },
+                        "status": "Planned",
+                        "patient": {
+                            "id": 1,
+                            "firstName": "Patient",
+                            "lastName": "Patient",
+                            "pesel": "003005039981",
+                            "email": "john.doe@patient.com",
+                            "address": {
+                                "id": 1,
+                                "city": "Biłgoraj",
+                                "zipCode": "23-400",
+                                "street": "Jana Pawła II",
+                                "houseNumber": "20",
+                                "localNumber": "1A"
+                            }
+                        },
+                        "doctor": {
+                            "id": 1,
+                            "firstName": "Dr John",
+                            "lastName": "Doe",
+                            "email": "john.doe@doctor.com"
+                        }
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "vaccine": {
+                        "$ref": "#/components/schemas/Vaccine"
+                    },
+                    "vaccinationSlot": {
+                        "$ref": "#/components/schemas/VaccinationSlot"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "Planned",
+                            "Completed",
+                            "Canceled"
+                        ]
+                    },
+                    "patient": {
+                        "$ref": "#/components/schemas/Patient"
+                    },
+                    "doctor": {
+                        "$ref": "#/components/schemas/Doctor"
+                    }
+                },
+                "required": [
+                    "id"
+                ]
+            },
+            "VaccinationSlot": {
+                "title": "VaccinationSlot",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "date"
+                ],
+                "description": "",
+                "examples": [
+                    {
+                        "id": 1,
+                        "date": "2019-08-24T14:15:22Z"
+                    }
+                ]
+            },
+            "Vaccine": {
+                "title": "Vaccine",
+                "type": "object",
+                "examples": [
+                    {
+                        "id": 1,
+                        "name": "Phizer",
+                        "disease": "COVID-19",
+                        "requiredDoses": 2,
+                        "serialNumber": "00-10012414881"
+                    }
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "disease": {
+                        "type": "string",
+                        "enum": [
+                            "COVID-19",
+                            "COVID-21",
+                            "Flu",
+                            "OTHER"
+                        ]
+                    },
+                    "requiredDoses": {
+                        "type": "integer"
+                    },
+                    "serialNumber": {
+                        "type": [
+                            "integer",
+                            "string"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "disease",
+                    "requiredDoses"
+                ]
+            }
+        },
+        "responses": {
+            "ValidationError": {
+                "description": "Validation error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "description": "Is set to false"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "description": "Object of invalid fields"
+                                }
+                            },
+                            "required": [
+                                "success",
+                                "data"
+                            ]
+                        },
+                        "examples": {
+                            "example-1": {
+                                "value": {
+                                    "success": false,
+                                    "data": {
+                                        "field1": "Field field1 is required",
+                                        "field2": "Field field2 must have at least 5 characters"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Unauthorized error (invalid or empry Bearer token)",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "description": "Is set to false",
+                                    "default": false
+                                },
+                                "msg": {
+                                    "type": "string",
+                                    "default": "Unauthorized"
+                                }
+                            },
+                            "required": [
+                                "success",
+                                "msg"
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "Authorization": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization"
+            }
+        }
+    }
+}
